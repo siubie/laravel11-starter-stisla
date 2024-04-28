@@ -1,8 +1,8 @@
 name: Auto Deploy
-
-on:
-  push:
-    branches: [master]
+on: workflow_dispatch
+#on:
+ # push:
+ #   branches: [master]
 
 jobs:
   deploy:
