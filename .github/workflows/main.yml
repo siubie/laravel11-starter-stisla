@@ -1,0 +1,26 @@
+name: Auto Deploy
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:    
+      - name: Deployment
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          key : ${{secrets.SSH_PRIVATE_KEY}}
+          username: ${{ secrets.SSH_USERNAME }}
+          script: |
+            cd /var/www/html/dosenngoding.com/
+            git fetch
+            git reset --hard origin/master
+            git pull
+            composer clear-cache
+            composer dump-autoload --no-cache
+            composer update --no-interaction --prefer-dist --optimize-autoloader --no-dev
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+            php artisan optimize:clear
