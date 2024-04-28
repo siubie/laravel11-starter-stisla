@@ -1,8 +1,8 @@
 name: Auto Deploy
-on: workflow_dispatch
-#on:
- # push:
- #   branches: [master]
+#on: workflow_dispatch
+on:
+ push:
+  branches: [master]
 
 jobs:
   deploy:
@@ -16,4 +16,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           script: |
             cd /var/www/dosenngoding.com/
-            git status
+            git pull
+            composer install
+            php artisan migrate:fresh --seed
