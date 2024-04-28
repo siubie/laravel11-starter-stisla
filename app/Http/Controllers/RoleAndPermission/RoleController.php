@@ -6,18 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
-class RoleController extends Controller
+class RoleController extends Controller implements HasMiddleware
 {
-    public function __construct()
+
+    public static function middleware(): array
     {
-        $this->middleware('auth');
-        $this->middleware('permission:role.index')->only('index');
-        $this->middleware('permission:role.create')->only('create', 'store');
-        $this->middleware('permission:role.edit')->only('edit', 'update');
-        $this->middleware('permission:role.destroy')->only('destroy');
+        return [
+            'auth',
+            new Middleware('permission:role.index', only: ['index']),
+            new Middleware('permission:role.create', only: ['create', 'store']),
+            new Middleware('permission:role.edit', only: ['edit', 'update']),
+            new Middleware('permission:role.destroy', only: ['destroy']),
+        ];
     }
     /**
      * Display a listing of the resource.
