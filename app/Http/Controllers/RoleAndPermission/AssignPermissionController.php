@@ -9,12 +9,26 @@ use App\Http\Requests\UpdateAssignRequest;
 use App\Http\Requests\UpdatePermissionRequest;
 use Facade\Ignition\DumpRecorder\Dump;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use PHPUnit\Framework\MockObject\DuplicateMethodException;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class AssignPermissionController extends Controller implements HasMiddleware
 {
+
+    //implements HasMiddleware
+    public static function middleware(): array
+    {
+        return [
+            'auth',
+            new Middleware('permission:assign.index', only: ['index']),
+            new Middleware('permission:assign.create', only: ['create', 'store']),
+            new Middleware('permission:assign.edit', only: ['edit', 'update']),
+            new Middleware('permission:assign.destroy', only: ['destroy']),
+        ];
+    }
 
     // public function __construct()
     // {
