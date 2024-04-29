@@ -6,19 +6,32 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePermissionRequest;
 use App\Http\Requests\UpdatePermissionRequest;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 
-class PermissionController extends Controller
+class PermissionController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    //implementing HasMiddleware
+    public static function middleware(): array
     {
-        $this->middleware('auth');
-        $this->middleware('permission:permission.index')->only('index');
-        $this->middleware('permission:permission.create')->only('create', 'store');
-        $this->middleware('permission:permission.edit')->only('edit', 'update');
-        $this->middleware('permission:permission.destroy')->only('destroy');
+        return [
+            'auth',
+            new Middleware('permission:permission.index', only: ['index']),
+            new Middleware('permission:permission.create', only: ['create', 'store']),
+            new Middleware('permission:permission.edit', only: ['edit', 'update']),
+            new Middleware('permission:permission.destroy', only: ['destroy']),
+        ];
     }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    //     $this->middleware('permission:permission.index')->only('index');
+    //     $this->middleware('permission:permission.create')->only('create', 'store');
+    //     $this->middleware('permission:permission.edit')->only('edit', 'update');
+    //     $this->middleware('permission:permission.destroy')->only('destroy');
+    // }
     /**
      * Display a listing of the resource.
      *
