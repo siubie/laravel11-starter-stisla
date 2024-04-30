@@ -7,11 +7,23 @@ use App\Http\Requests\StoreMenuGroupRequest;
 use App\Http\Requests\UpdateMenuGroupRequest;
 use App\Models\MenuGroup;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 
-class MenuGroupController extends Controller
+class MenuGroupController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            'auth',
+            new Middleware('permission:menu-group.index', only: ['index']),
+            new Middleware('permission:menu-group.create', only: ['create', 'store']),
+            new Middleware('permission:menu-group.edit', only: ['edit', 'update']),
+            new Middleware('permission:menu-group.destroy', only: ['destroy']),
+        ];
+    }
     /**
      * Display a listing of the resource.
      *
