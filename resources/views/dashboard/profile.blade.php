@@ -77,7 +77,7 @@
                 </div>
                 <div class="col-12 col-md-12 col-lg-7">
                     <div class="card">
-                        <form method="POST" actioe="{{ route('user-profile-information.update') }}"
+                        <form method="POST" action="{{ route('user-profile-information.update') }}"
                             class="needs-validation" novalidate="">
                             @csrf
                             @method('PUT')
