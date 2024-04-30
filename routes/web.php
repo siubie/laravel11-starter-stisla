@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Http\Controllers\UserController;
 use App\Models\Category;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,10 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/dashboard', function () {
         return view('home', ['users' => User::get(),]);
     });
+
+    Route::get('change-profile', function (Request $request) {
+        return view('dashboard.profile');
+    })->name('profile');
     //user list
 
     Route::prefix('user-management')->group(function () {
