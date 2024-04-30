@@ -7,17 +7,31 @@ use App\Http\Requests\StoreUserToRoleRequest;
 use App\Http\Requests\UpdateUserToRoleRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Spatie\Permission\Models\Role;
 
-class AssignUserToRoleController extends Controller
+class AssignUserToRoleController extends Controller implements HasMiddleware
 {
-    public function __construct()
+
+    public static function middleware(): array
     {
-        $this->middleware('auth');
-        $this->middleware('permission:assign.user.index')->only('index');
-        $this->middleware('permission:assign.user.create')->only('create', 'store');
-        $this->middleware('permission:assign.user.edit')->only('edit', 'update');
+        return [
+            'auth',
+            new Middleware('permission:assign.user.index', only: ['index']),
+            new Middleware('permission:assign.user.create', only: ['create', 'store']),
+            new Middleware('permission:assign.user.edit', only: ['edit', 'update']),
+            new Middleware('permission:assign.user.destroy', only: ['destroy']),
+        ];
     }
+
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    //     $this->middleware('permission:assign.user.index')->only('index');
+    //     $this->middleware('permission:assign.user.create')->only('create', 'store');
+    //     $this->middleware('permission:assign.user.edit')->only('edit', 'update');
+    // }
     //
     public function index()
     {
