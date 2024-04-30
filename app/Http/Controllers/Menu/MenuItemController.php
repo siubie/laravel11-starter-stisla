@@ -7,11 +7,24 @@ use App\Http\Requests\StoreMenuItemRequest;
 use App\Models\MenuGroup;
 use App\Models\MenuItem;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
-class MenuItemController extends Controller
+class MenuItemController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+    {
+        return [
+            'auth',
+            new Middleware('permission:menu-item.index', only: ['index']),
+            new Middleware('permission:menu-item.create', only: ['create', 'store']),
+            new Middleware('permission:menu-item.edit', only: ['edit', 'update']),
+            new Middleware('permission:menu-item.destroy', only: ['destroy']),
+        ];
+    }
     /**
      * Display a listing of the resource.
      *
