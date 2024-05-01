@@ -30,15 +30,11 @@ class CreateNewUser implements CreatesNewUsers
             ],
             'password' => $this->passwordRules(),
         ])->validate();
-        //create dulu usernya
-        $user = User::create([
+
+        return User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
-        ]);
-        //set user role
-        $user->assignRole('user');
-        //return user
-        return $user;
+        ])->assignRole('user');
     }
 }
