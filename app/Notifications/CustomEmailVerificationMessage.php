@@ -66,7 +66,7 @@ class CustomEmailVerificationMessage extends Notification
             ->line(Lang::get('Untuk verif email tinggal klik aja gaes abis gitu bisa langsung gass ngoding'))
             ->action(Lang::get('Validasi Email'), $url)
             ->line(Lang::get('Kalo ga bisa klik, copy paste aja link di bawah ini di browser ya:'))
-            ->line(Lang::get('Kalo ini bukan kamu, abaikan aja ya gaes. Terima kasih!'));
+            ->line(Lang::get('Jangan Lupa emailnya di Mark as Important ya gaes!'));
     }
 
     /**
