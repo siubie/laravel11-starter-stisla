@@ -20,9 +20,15 @@
         <div class="section-body">
             <h2 class="section-title">Please Verify Your Email</h2>
             <div class="card">
-                <div class="card-header">{{ __('Verify Your Email Address') }}</div>
+                <div class="card-header">
+                    <h4>{{ __('Verify Your Email Address') }}</h4>
+                </div>
 
                 <div class="card-body">
+                    <div class="alert alert-success" role="alert">
+                        Jangan lupa di mark as not spam, biar email dari dosen ngoding bisa masuk
+                    </div>
+
                     @if (session('resent'))
                         <div class="alert alert-success" role="alert">
                             {{ __('A fresh verification link has been sent to your email address.') }}
