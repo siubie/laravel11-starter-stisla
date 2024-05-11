@@ -77,7 +77,8 @@ class FortifyServiceProvider extends ServiceProvider
             //validate request
             // $recaptcha = $request->get('g-recaptcha-response');
             $score = RecaptchaV3::verify($request->get('g-recaptcha-response'), 'login');
-            // dd($score);
+            dd($score);
+
             if ($score > 0.7) {
                 // go
                 $credentials = $request->validate([
