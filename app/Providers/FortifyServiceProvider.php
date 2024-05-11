@@ -75,27 +75,18 @@ class FortifyServiceProvider extends ServiceProvider
         //custom authentication
         Fortify::authenticateUsing(function (Request $request) {
             //validate request
-            // $recaptcha = $request->get('g-recaptcha-response');
-            $score = RecaptchaV3::verify($request->get('g-recaptcha-response'), 'login');
-            // dd($score);
-            if ($score > 0.7) {
-                // go
-                $credentials = $request->validate([
-                    'email' => 'required|email',
-                    'password' => 'required',
-                ]);
-                //unset recaptcha
-                //check user
-                if (Auth::attempt($credentials)) {
-                    return Auth::user();
-                }
-            } elseif ($score > 0.3) {
-                // require additional email verification
-            } else {
-                dd($score);
-                // return abort(400, 'You are most likely a bot');
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+                'g-recaptcha-response' => 'required|recaptchav3:login,0.5',
+            ]);
+
+            //create credentials array
+            $credentials = $request->only('email', 'password');
+            //attempt to authenticate user
+            if (Auth::attempt($credentials)) {
+                return Auth::user();
             }
-            //return false
             return false;
         });
     }

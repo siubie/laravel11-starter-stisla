@@ -41,9 +41,9 @@
                                         {{ session('status') }}
                                     </div>
                                 @endif
-                                @error('g-recaptcha-response')
+                                {{-- @error('g-recaptcha-response')
                                     {{ $message }}
-                                @enderror
+                                @enderror --}}
                                 {{-- @if ($errors->any())
                                     {{ implode('', $errors->all('<div>:message</div>')) }}
                                 @endif
@@ -79,7 +79,17 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    {!! RecaptchaV3::field('login') !!}
+                                    <div
+                                        class="form-group{{ $errors->has('g-recaptcha-response') ? ' has-error' : '' }}">
+                                        <div class="col-md-6">
+                                            {!! RecaptchaV3::field('login') !!}
+                                            @if ($errors->has('g-recaptcha-response'))
+                                                <span class="help-block">
+                                                    <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4"
                                             value="Login">
