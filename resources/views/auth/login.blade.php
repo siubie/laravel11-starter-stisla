@@ -17,7 +17,6 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/components.css">
-    {!! RecaptchaV3::initJs() !!}
 </head>
 
 <body>
@@ -41,17 +40,8 @@
                                         {{ session('status') }}
                                     </div>
                                 @endif
-                                {{-- @error('g-recaptcha-response')
-                                    {{ $message }}
-                                @enderror --}}
-                                {{-- @if ($errors->any())
-                                    {{ implode('', $errors->all('<div>:message</div>')) }}
-                                @endif
-                                @foreach ($errors->getMessages() as $key => $message)
-                                    {{ $key }}
-                                @endforeach --}}
-                                <form action="{{ route('login') }}" method="POST" class="needs-validation"
-                                    novalidate="">
+                                <form id="login-form" action="{{ route('login') }}" method="POST"
+                                    class="needs-validation" novalidate="">
                                     @csrf
                                     <div class="form-group">
                                         <label for="email">Email</label>
@@ -79,20 +69,10 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div
-                                        class="form-group{{ $errors->has('g-recaptcha-response') ? ' has-error' : '' }}">
-                                        <div class="col-md-6">
-                                            {!! RecaptchaV3::field('login') !!}
-                                            @if ($errors->has('g-recaptcha-response'))
-                                                <span class="help-block">
-                                                    <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </div>
+
                                     <div class="form-group">
-                                        <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4"
-                                            value="Login">
+                                        <button id="login" type="submit" class="btn btn-primary btn-lg btn-block"
+                                            tabindex="4" value="Login" onclick="onClickRecaptcha(event)">
                                             Login
                                         </button>
                                     </div>

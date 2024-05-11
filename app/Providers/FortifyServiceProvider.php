@@ -41,7 +41,7 @@ class FortifyServiceProvider extends ServiceProvider
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
 
-            return Limit::perMinute(5)->by($throttleKey);
+            return Limit::perMinute(60)->by($throttleKey);
         });
 
         RateLimiter::for('two-factor', function (Request $request) {
@@ -70,24 +70,6 @@ class FortifyServiceProvider extends ServiceProvider
         //verify account
         Fortify::verifyEmailView(function () {
             return view('auth.verify');
-        });
-
-        //custom authentication
-        Fortify::authenticateUsing(function (Request $request) {
-            //validate request
-            $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-                'g-recaptcha-response' => 'required|recaptchav3:login,0.5',
-            ]);
-
-            //create credentials array
-            $credentials = $request->only('email', 'password');
-            //attempt to authenticate user
-            if (Auth::attempt($credentials)) {
-                return Auth::user();
-            }
-            return false;
         });
     }
 }
