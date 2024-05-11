@@ -17,7 +17,7 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/components.css">
-    {!! RecaptchaV3::initJs() !!}
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
 </head>
 
 <body>
@@ -41,18 +41,14 @@
                                         {{ session('status') }}
                                     </div>
                                 @endif
-                                {{-- @error('g-recaptcha-response')
-                                    {{ $message }}
-                                @enderror --}}
-                                {{-- @if ($errors->any())
-                                    {{ implode('', $errors->all('<div>:message</div>')) }}
-                                @endif
-                                @foreach ($errors->getMessages() as $key => $message)
-                                    {{ $key }}
-                                @endforeach --}}
-                                <form action="{{ route('login') }}" method="POST" class="needs-validation"
-                                    novalidate="">
+                                <form id="loginForm" action="{{ route('login') }}" method="POST"
+                                    class="needs-validation" novalidate="">
                                     @csrf
+                                    <input type="hidden" class="g-recaptcha" name="recaptcha_token"
+                                        id="recaptcha_token">
+                                    @error('recaptcha_token')
+                                        {{ $message }}
+                                    @enderror
                                     <div class="form-group">
                                         <label for="email">Email</label>
                                         <input type="email" name="email" value="{{ old('email') }}"
@@ -79,20 +75,10 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    <div
-                                        class="form-group{{ $errors->has('g-recaptcha-response') ? ' has-error' : '' }}">
-                                        <div class="col-md-6">
-                                            {!! RecaptchaV3::field('login') !!}
-                                            @if ($errors->has('g-recaptcha-response'))
-                                                <span class="help-block">
-                                                    <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </div>
+
                                     <div class="form-group">
-                                        <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4"
-                                            value="Login">
+                                        <button id="login" type="submit" class="btn btn-primary btn-lg btn-block"
+                                            tabindex="4" value="Login">
                                             Login
                                         </button>
                                     </div>
@@ -131,6 +117,22 @@
     <script src="../assets/js/custom.js"></script>
 
     <!-- Page Specific JS File -->
+    <script>
+        grecaptcha.ready(function() {
+            document.getElementById('loginForm').addEventListener("submit", function(event) {
+                event.preventDefault();
+                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {
+                        action: 'login'
+                    })
+                    .then(function(token) {
+                        // console.log(token);
+                        document.getElementById("recaptcha_token").value = token;
+                        //add delay 1 second
+                        document.getElementById('loginForm').submit();
+                    });
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -7,6 +7,7 @@ use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Models\User;
+use App\Rules\Recaptcha;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
-use Lunaweb\RecaptchaV3\Facades\RecaptchaV3;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -41,7 +41,7 @@ class FortifyServiceProvider extends ServiceProvider
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
 
-            return Limit::perMinute(5)->by($throttleKey);
+            return Limit::perMinute(60)->by($throttleKey);
         });
 
         RateLimiter::for('two-factor', function (Request $request) {
@@ -72,22 +72,21 @@ class FortifyServiceProvider extends ServiceProvider
             return view('auth.verify');
         });
 
-        //custom authentication
+        //custom login validation
         Fortify::authenticateUsing(function (Request $request) {
-            //validate request
+            //validate the request
             $request->validate([
                 'email' => 'required|email',
                 'password' => 'required',
-                'g-recaptcha-response' => 'required|recaptchav3:login,0.5',
+                'recaptcha_token' => [
+                    'required',
+                    new Recaptcha()
+                ]
             ]);
-
-            //create credentials array
-            $credentials = $request->only('email', 'password');
-            //attempt to authenticate user
-            if (Auth::attempt($credentials)) {
+            //attempt to login the user
+            if (Auth::attempt($request->only('email', 'password'))) {
                 return Auth::user();
             }
-            return false;
         });
     }
 }
