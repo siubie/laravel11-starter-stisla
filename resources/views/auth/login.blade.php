@@ -41,9 +41,15 @@
                                         {{ session('status') }}
                                     </div>
                                 @endif
-                                @if ($errors->any())
+                                @error('g-recaptcha-response')
+                                    {{ $message }}
+                                @enderror
+                                {{-- @if ($errors->any())
                                     {{ implode('', $errors->all('<div>:message</div>')) }}
                                 @endif
+                                @foreach ($errors->getMessages() as $key => $message)
+                                    {{ $key }}
+                                @endforeach --}}
                                 <form action="{{ route('login') }}" method="POST" class="needs-validation"
                                     novalidate="">
                                     @csrf
@@ -72,13 +78,11 @@
                                         @error('password')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
-                                        @error('login')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
                                     </div>
                                     {!! RecaptchaV3::field('login') !!}
                                     <div class="form-group">
-                                        <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4">
+                                        <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4"
+                                            value="Login">
                                             Login
                                         </button>
                                     </div>
