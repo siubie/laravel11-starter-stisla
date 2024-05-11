@@ -6,9 +6,13 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
@@ -65,6 +69,28 @@ class FortifyServiceProvider extends ServiceProvider
         //verify account
         Fortify::verifyEmailView(function () {
             return view('auth.verify');
+        });
+
+        //custom authentication
+        Fortify::authenticateUsing(function (Request $request) {
+            //validate request
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+                'g-recaptcha-response' => 'required|recaptchav3:login,0.5'
+            ]);
+            //remove g-recaptcha-response from credentials
+            unset($credentials['g-recaptcha-response']);
+            //authenticate user using Auth facade
+            if (Auth::attempt($credentials)) {
+                // dd('login success');
+                $request->session()->regenerate();
+                return redirect()->intended('dashboard');
+            }
+
+            return back()->withErrors([
+                'email' => 'The provided credentials do not match our records.',
+            ])->onlyInput('email');
         });
     }
 }

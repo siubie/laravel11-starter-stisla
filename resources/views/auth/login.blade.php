@@ -13,11 +13,11 @@
         integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 
     <!-- CSS Libraries -->
-    <link rel="stylesheet" href="../node_modules/bootstrap-social/bootstrap-social.css">
 
     <!-- Template CSS -->
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/components.css">
+    {!! RecaptchaV3::initJs() !!}
 </head>
 
 <body>
@@ -40,6 +40,9 @@
                                     <div class="alert alert-success" role="alert">
                                         {{ session('status') }}
                                     </div>
+                                @endif
+                                @if ($errors->any())
+                                    {{ implode('', $errors->all('<div>:message</div>')) }}
                                 @endif
                                 <form action="{{ route('login') }}" method="POST" class="needs-validation"
                                     novalidate="">
@@ -69,7 +72,11 @@
                                         @error('password')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
+                                        @error('login')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
+                                    {!! RecaptchaV3::field('login') !!}
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4">
                                             Login
