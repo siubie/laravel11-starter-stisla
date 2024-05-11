@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
+use Lunaweb\RecaptchaV3\Facades\RecaptchaV3;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -74,23 +75,28 @@ class FortifyServiceProvider extends ServiceProvider
         //custom authentication
         Fortify::authenticateUsing(function (Request $request) {
             //validate request
-            $credentials = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-                'g-recaptcha-response' => 'required|recaptchav3:login,0.5'
-            ]);
-            //remove g-recaptcha-response from credentials
-            unset($credentials['g-recaptcha-response']);
-            //authenticate user using Auth facade
-            if (Auth::attempt($credentials)) {
-                // dd('login success');
-                $request->session()->regenerate();
-                return redirect()->intended('dashboard');
+            // $recaptcha = $request->get('g-recaptcha-response');
+            $score = RecaptchaV3::verify($request->get('g-recaptcha-response'), 'login');
+            // dd($score);
+            if ($score > 0.7) {
+                // go
+                $credentials = $request->validate([
+                    'email' => 'required|email',
+                    'password' => 'required',
+                ]);
+                //unset recaptcha
+                //check user
+                if (Auth::attempt($credentials)) {
+                    return Auth::user();
+                }
+            } elseif ($score > 0.3) {
+                // require additional email verification
+            } else {
+                dd($score);
+                // return abort(400, 'You are most likely a bot');
             }
-
-            return back()->withErrors([
-                'email' => 'The provided credentials do not match our records.',
-            ])->onlyInput('email');
+            //return false
+            return false;
         });
     }
 }
