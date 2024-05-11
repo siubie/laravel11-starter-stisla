@@ -7,6 +7,7 @@ use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Models\User;
+use App\Rules\Recaptcha;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
-use Lunaweb\RecaptchaV3\Facades\RecaptchaV3;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -70,6 +70,23 @@ class FortifyServiceProvider extends ServiceProvider
         //verify account
         Fortify::verifyEmailView(function () {
             return view('auth.verify');
+        });
+
+        //custom login validation
+        Fortify::authenticateUsing(function (Request $request) {
+            //validate the request
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+                'recaptcha_token' => [
+                    'required',
+                    new Recaptcha()
+                ]
+            ]);
+            //attempt to login the user
+            if (Auth::attempt($request->only('email', 'password'))) {
+                return Auth::user();
+            }
         });
     }
 }
