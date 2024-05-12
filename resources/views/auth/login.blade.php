@@ -77,8 +77,8 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <button id="login" type="submit" class="btn btn-primary btn-lg btn-block"
-                                            tabindex="4" value="Login">
+                                        <button id="login" class="btn btn-primary btn-lg btn-block" tabindex="4"
+                                            value="Login">
                                             Login
                                         </button>
                                     </div>
@@ -125,9 +125,8 @@
                         action: 'login'
                     })
                     .then(function(token) {
-                        // console.log(token);
+                        console.log(token);
                         document.getElementById("recaptcha_token").value = token;
-                        //add delay 1 second
                         document.getElementById('loginForm').submit();
                     });
             });

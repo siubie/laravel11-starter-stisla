@@ -74,19 +74,42 @@ class FortifyServiceProvider extends ServiceProvider
 
         //custom login validation
         Fortify::authenticateUsing(function (Request $request) {
-            //validate the request
-            $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-                'recaptcha_token' => [
-                    'required',
-                    new Recaptcha()
+            //use curl to validate the recaptcha
+            $postdata = http_build_query(
+                [
+                    "secret" => config('services.recaptcha.secret_key'),
+                    "response" => $request->recaptcha_token,
+                    "remoteip" => $request->ip()
                 ]
-            ]);
-            //attempt to login the user
-            if (Auth::attempt($request->only('email', 'password'))) {
-                return Auth::user();
+            );
+            $opts = [
+                'http' =>
+                [
+                    'method'  => 'POST',
+                    'header'  => 'Content-type: application/x-www-form-urlencoded',
+                    'content' => $postdata
+                ]
+            ];
+            $context  = stream_context_create($opts);
+            $result = file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context);
+            $check = json_decode($result);
+            if ($check->success) {
+                //validate the request
+                $request->validate([
+                    'email' => 'required|email',
+                    'password' => 'required',
+                    // 'recaptcha_token' => [
+                    //     'required',
+                    //     new Recaptcha($request->recaptcha_token)
+                    // ]
+                ]);
+                //attempt to login the user
+                if (Auth::attempt($request->only('email', 'password'))) {
+                    return Auth::user();
+                }
             }
+            // dd($request->all(), $request->recaptcha_token, $check);
+            return false;
         });
     }
 }

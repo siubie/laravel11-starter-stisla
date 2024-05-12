@@ -17,11 +17,12 @@ class Recaptcha implements ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $response = Http::asForm()->post("https://www.google.com/recaptcha/api/siteverify", [
+        $data = [
             'secret' => config('services.recaptcha.secret_key'),
             'response' => $value,
             'remoteip' => request()->ip(),
-        ]);
+        ];
+        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', $data);
 
         // dd($response->json(), $response->json('score'));
         //return fail if the response is failed
