@@ -100,7 +100,20 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    <div class="form-group">
+                                        <div class="d-block">
+                                            <label for="captcha" class="control-label">Captcha</label>
+                                        </div>
+                                        <img src="{{ captcha_src() }}" alt="captcha">
+                                        <div class="mt-2"></div>
+                                        <!-- <label class="font-weight-bold text-uppercase">Password</label> -->
+                                        <input type="captcha" name="captcha"
+                                            class="form-control @error('captcha') is-invalid @enderror"
+                                            placeholder="Masukkan Captcha ">
+                                        @error('captcha')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary btn-lg btn-block">
                                             Register

@@ -78,10 +78,7 @@ class FortifyServiceProvider extends ServiceProvider
             $request->validate([
                 'email' => 'required|email',
                 'password' => 'required',
-                'recaptcha_token' => [
-                    'required',
-                    new Recaptcha()
-                ]
+                'captcha' => 'required|captcha'
             ]);
             //attempt to login the user
             if (Auth::attempt($request->only('email', 'password'))) {
