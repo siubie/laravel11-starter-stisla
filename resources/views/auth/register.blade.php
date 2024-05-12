@@ -18,6 +18,7 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/components.css">
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
 </head>
 
 <body>
@@ -37,8 +38,13 @@
                                 <h4>Register</h4>
                             </div>
                             <div class="card-body">
-                                <form action="{{ route('register') }}" method="POST">
+                                <form id="registerForm" action="{{ route('register') }}" method="POST">
                                     @csrf
+                                    <input type="hidden" class="g-recaptcha" name="recaptcha_token"
+                                        id="recaptcha_token">
+                                    @error('recaptcha_token')
+                                        {{ $message }}
+                                    @enderror
                                     <div class="row">
                                         <div class="form-group col-6">
                                             <div class="form-group">
@@ -102,7 +108,7 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                        <button class="btn btn-primary btn-lg btn-block">
                                             Register
                                         </button>
                                     </div>
@@ -141,6 +147,21 @@
 
     <!-- Page Specific JS File -->
     <script src="../assets/js/page/auth-register.js"></script>
+    <script>
+        grecaptcha.ready(function() {
+            document.getElementById('registerForm').addEventListener("submit", function(event) {
+                event.preventDefault();
+                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {
+                        action: 'login'
+                    })
+                    .then(function(token) {
+                        console.log(token);
+                        document.getElementById("recaptcha_token").value = token;
+                        document.getElementById('registerForm').submit();
+                    });
+            });
+        });
+    </script>
 </body>
 
 </html>
