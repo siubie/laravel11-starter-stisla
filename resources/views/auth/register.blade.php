@@ -155,7 +155,7 @@
                         action: 'login'
                     })
                     .then(function(token) {
-                        console.log(token);
+                        // console.log(token);
                         document.getElementById("recaptcha_token").value = token;
                         document.getElementById('registerForm').submit();
                     });

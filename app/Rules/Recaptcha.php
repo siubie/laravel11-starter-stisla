@@ -36,7 +36,8 @@ class Recaptcha implements ValidationRule
         }
 
         //return fail if the score is less than the minimum score
-        if ($response->json('score') && ($response->json('score') < config('services.recaptcha.min_score'))) {
+        // dd($response->json('score'));
+        if ($response->json('score') && ($response->json('score') < 0.5)) {
             $fail('Recaptcha validation failed, score too low');
         }
     }
