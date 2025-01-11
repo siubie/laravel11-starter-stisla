@@ -17,7 +17,7 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/components.css">
-    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+    {{-- <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script> --}}
 </head>
 
 <body>
@@ -44,11 +44,11 @@
                                 <form id="loginForm" action="{{ route('login') }}" method="POST"
                                     class="needs-validation" novalidate="">
                                     @csrf
-                                    <input type="hidden" class="g-recaptcha" name="recaptcha_token"
+                                    {{-- <input type="hidden" class="g-recaptcha" name="recaptcha_token"
                                         id="recaptcha_token">
                                     @error('recaptcha_token')
                                         {{ $message }}
-                                    @enderror
+                                    @enderror --}}
                                     <div class="form-group">
                                         <label for="email">Email</label>
                                         <input type="email" name="email" value="{{ old('email') }}"
@@ -117,22 +117,6 @@
     <script src="../assets/js/custom.js"></script>
 
     <!-- Page Specific JS File -->
-    <script>
-        grecaptcha.ready(function() {
-            document.getElementById('loginForm').addEventListener("submit", function(event) {
-                event.preventDefault();
-                grecaptcha.execute('{{ config('services.recaptcha.site_key') }}', {
-                        action: 'login'
-                    })
-                    .then(function(token) {
-                        // console.log(token);
-                        document.getElementById("recaptcha_token").value = token;
-                        //add delay 1 second
-                        document.getElementById('loginForm').submit();
-                    });
-            });
-        });
-    </script>
 </body>
 
 </html>
